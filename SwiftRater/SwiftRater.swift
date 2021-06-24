@@ -306,6 +306,8 @@ import StoreKit
             UsageDataManager.shared.isRateDone = true
         } else {
             let alert = NSAlert.init()
+            alert.alertStyle = .informational
+            
             alert.messageText = titleText
             alert.informativeText = messageText
             
