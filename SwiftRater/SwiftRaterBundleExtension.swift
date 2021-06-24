@@ -6,7 +6,8 @@
 //  Copyright © 2017 com.takecian. All rights reserved.
 //
 
-import UIKit
+//import UIKit
+import Cocoa
 
 internal extension Bundle {
 

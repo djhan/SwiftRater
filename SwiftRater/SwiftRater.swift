@@ -6,7 +6,8 @@
 //  Copyright © 2017年 com.takecian. All rights reserved.
 //
 
-import UIKit
+//import UIKit
+import Cocoa
 import StoreKit
 
 @objc public class SwiftRater: NSObject {
@@ -146,7 +147,8 @@ import StoreKit
     }
 
     @discardableResult
-    @objc public static func check(host: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> Bool {
+    //@objc public static func check(host: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> Bool {
+    @objc public static func check(host: NSWindowController? = NSApplication.shared.keyWindow?.windowController) -> Bool {
         guard UsageDataManager.shared.ratingConditionsHaveBeenMet else {
             return false
         }
@@ -155,7 +157,8 @@ import StoreKit
         return true
     }
     
-    @objc public static func rateApp(host: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) {
+    //@objc public static func rateApp(host: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) {
+    @objc public static func rateApp(host: NSWindowController? = NSApplication.shared.keyWindow?.windowController) {
         NSLog("[SwiftRater] Trying to show review request dialog.")
         SwiftRater.shared.showRatingAlert(host: host, force: true)
 
@@ -295,12 +298,60 @@ import StoreKit
         UsageDataManager.shared.incrementSignificantUseCount()
     }
 
-    private func showRatingAlert(host: UIViewController?, force: Bool) {
+    //private func showRatingAlert(host: UIViewController?, force: Bool) {
+    private func showRatingAlert(host: NSWindowController?, force: Bool) {
         NSLog("[SwiftRater] Trying to show review request dialog.")
         if #available(iOS 10.3, *), SwiftRater.useStoreKitIfAvailable, !force {
             SKStoreReviewController.requestReview()
             UsageDataManager.shared.isRateDone = true
         } else {
+            let alert = NSAlert.init()
+            alert.messageText = titleText
+            alert.informativeText = messageText
+            
+            // Rate 버튼: 1
+            alert.addButton(withTitle: rateText)
+            // Later 버튼: 2
+            alert.addButton(withTitle: laterText)
+            // 취소 버튼: 3
+            alert.addButton(withTitle: cancelText)
+
+            //------------------------------------------------------------------//
+            /// response 확인 내부 메쏘드
+            func checkResponse(_ response: NSApplication.ModalResponse) {
+                switch response {
+                // Rate 클릭시
+                case .alertFirstButtonReturn:
+                    self.rateAppWithAppStore()
+                    UsageDataManager.shared.isRateDone = true
+
+                // Later 클릭시
+                case .alertSecondButtonReturn:
+                    UsageDataManager.shared.saveReminderRequestDate()
+
+                // 취소 클릭시
+                case .alertThirdButtonReturn:
+                    UsageDataManager.shared.isRateDone = true
+                    
+                default:
+                    assertionFailure()
+                    return
+                }
+            }
+            //------------------------------------------------------------------//
+
+            if let window = host?.window {
+                // alert 를 sheet 로 표시
+                alert.beginSheetModal(for: window) { response in
+                    checkResponse(response)
+                }
+            }
+            else {
+                // alert를 modal 창으로 표시
+                checkResponse(alert.runModal())
+            }
+            
+            /*
             let alertController = UIAlertController(title: titleText, message: messageText, preferredStyle: .alert)
             
             let rateAction = UIAlertAction(title: rateText, style: .default, handler: {
@@ -327,6 +378,7 @@ import StoreKit
             }
             
             host?.present(alertController, animated: true, completion: nil)
+             */
         }
     }
     
