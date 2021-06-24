@@ -385,6 +385,11 @@ import StoreKit
     }
     
     private func rateAppWithAppStore() {
+        guard let appId = SwiftRater.appID else { return }
+        let reviewURL = "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review";
+        guard let url = URL(string: reviewURL) else { return }
+        NSWorkspace.shared.open(url)
+        /*
         #if arch(i386) || arch(x86_64)
             print("APPIRATER NOTE: iTunes App Store is not supported on the iOS simulator. Unable to open App Store page.");
         #else
@@ -393,6 +398,7 @@ import StoreKit
             guard let url = URL(string: reviewURL) else { return }
             UIApplication.shared.openURL(url)
         #endif
+         */
     }
 }
 
