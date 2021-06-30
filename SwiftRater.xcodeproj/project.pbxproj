@@ -207,10 +207,9 @@
 			};
 			buildConfigurationList = 645FF65F1E8B8CD0001D5563 /* Build configuration list for PBXProject "SwiftRater" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				fr,
 				de,
@@ -242,6 +241,7 @@
 				sv,
 				ms,
 				"zh-Hant",
+				Base,
 			);
 			mainGroup = 645FF65B1E8B8CD0001D5563;
 			productRefGroup = 645FF6661E8B8CD0001D5563 /* Products */;
